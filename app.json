@@ -14,14 +14,23 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ahdhani.expo53",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs camera access for Captur functionality"
+      },
+      "appleTeamId": "9Y9RJ393QD"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.ahdhani.expo53",
+      "permissions": [
+        "CAMERA"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -29,7 +38,8 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "./plugins/captur-plugin.js"
     ],
     "experiments": {
       "typedRoutes": true

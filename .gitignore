@@ -35,3 +35,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# temp ignore until Captur 0.7.0 is released to npm
+captur-ai-captur-react-native-events-0.6.6.tgz
