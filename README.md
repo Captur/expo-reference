@@ -17,7 +17,7 @@ The Captur SDK integration requires a custom plugin to:
 ## Installation
 
 1.  Install the Captur SDK package `npm install @captur-ai/captur-react-native-events`
-2.  Create the plugin file ( found in `/plugins/captur-plugin.js`
+2.  Create the plugin file ( found in `/plugins/captur-plugin.js` )
 3.  Add the plugin to your app.json ( see app.json )
 4.  Run `npx expo prebuild --clean`
 5.  SDK usage found in `app.tsx`
