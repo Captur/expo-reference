@@ -16,8 +16,7 @@ const DELAY = 1;
 const TIMEOUT = 15;
 const LOCATION_NAME = "Toronto";
 const ASSET_TYPE = "package";
-const API_KEY =
-  "captur-organisation-6448f9caace033ce86448230.6cabb546-b18f-4e52-a17e-dd222bb9edd4";
+const API_KEY = "captur-***-***-***";
 
 async function initializeCaptur() {
   await cptrSetTimeout(TIMEOUT);
