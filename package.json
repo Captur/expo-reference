@@ -13,10 +13,11 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@captur-ai/captur-react-native-events": "0.7.0",
+    "@captur-ai/captur-react-native-events": "file:./captur-ai-captur-react-native-events-0.7.0.tgz",
     "@expo/vector-icons": "^14.1.0",
     "@react-navigation/native": "^7.1.6",
     "expo": "~53.0.22",
+    "expo-constants": "~17.1.8",
     "expo-dev-client": "~5.2.4",
     "expo-font": "~13.3.2",
     "expo-linking": "~7.1.7",

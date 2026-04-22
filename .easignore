@@ -1,0 +1,28 @@
+# EAS build ignore — the tarball must be included for npm ci to work
+# NOTE: .easignore completely REPLACES .gitignore for EAS builds
+
+node_modules/
+.expo/
+dist/
+web-build/
+android/
+ios/
+expo-env.d.ts
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+*.pem
+.env*.local
+*.tsbuildinfo
+*.apk
+*.ipa
+packages/

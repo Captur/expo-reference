@@ -41,31 +41,9 @@ function withCapturPlugin(config) {
     return config;
   });
 
-  // Modify Android build.gradle
+  // Modify Android app build.gradle
   config = withAppBuildGradle(config, (config) => {
     let contents = config.modResults.contents;
-
-    // Add flatDir repository after the android block but before dependencies
-    if (!contents.includes("flatDir")) {
-      const androidBlockEnd = contents.lastIndexOf(
-        "}",
-        contents.indexOf("dependencies {")
-      );
-      const repositoriesSection = `
-repositories {
-    google()
-    mavenCentral()
-    flatDir {
-        dirs '../../node_modules/@captur-ai/captur-react-native-events/android/libs'
-    }
-}
-
-`;
-      contents =
-        contents.slice(0, androidBlockEnd + 1) +
-        repositoriesSection +
-        contents.slice(androidBlockEnd + 1);
-    }
 
     // Add Captur dependencies at the beginning of the dependencies block
     if (!contents.includes("capturMicroMobility-release")) {
@@ -73,15 +51,15 @@ repositories {
         contents.indexOf("dependencies {") + "dependencies {".length;
       const capturDependencies = `
     // Captur AI dependencies
-    implementation(name: 'capturMicroMobility-release', ext: 'aar') {
-        transitive = true
-    }
+    implementation(files(new File(rootDir, '../node_modules/@captur-ai/captur-react-native-events/android/libs/capturMicroMobility-release.aar')))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-    implementation("androidx.camera:camera-core:1.3.4")
-    implementation("androidx.camera:camera-camera2:1.3.4")
-    implementation("androidx.camera:camera-lifecycle:1.3.4")
-    implementation("androidx.camera:camera-view:1.3.4")
-    api("org.tensorflow:tensorflow-lite-task-vision:0.4.0")
+    implementation("androidx.camera:camera-core:1.4.1")
+    implementation("androidx.camera:camera-camera2:1.4.1")
+    implementation("androidx.camera:camera-lifecycle:1.4.1")
+    implementation("androidx.camera:camera-view:1.4.1")
+    implementation("com.google.ai.edge.litert:litert:1.4.2")
+    implementation("com.google.ai.edge.litert:litert-support:1.4.2")
+    implementation("com.google.ai.edge.litert:litert-metadata:1.4.2")
     implementation("com.squareup.retrofit2:adapter-rxjava3:2.9.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

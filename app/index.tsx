@@ -11,19 +11,37 @@ import {
 } from "@captur-ai/captur-react-native-events";
 import { useEffect, useRef, useState } from "react";
 import { Button, Image, StyleSheet, TextInput, View } from "react-native";
+const { CAPTUR_API_KEY, CAPTUR_BASE_URL } = require("../captur.config");
 
 const DELAY = 1;
 const TIMEOUT = 15;
 const LOCATION_NAME = "Toronto";
 const ASSET_TYPE = "package";
-const API_KEY = "captur-***-***-***";
 
 async function initializeCaptur() {
+  console.log("[Captur] Initializing...");
+  console.log("[Captur] Base URL:", CAPTUR_BASE_URL ?? "(default)");
+  console.log("[Captur] API Key:", CAPTUR_API_KEY.slice(0, 20) + "...");
+
+  console.log("[Captur] Setting timeout:", TIMEOUT);
   await cptrSetTimeout(TIMEOUT);
+
+  console.log("[Captur] Setting delay:", DELAY);
   await setDelay(DELAY);
-  await setApiKey(API_KEY);
+
+  console.log("[Captur] Setting API key...");
+  await setApiKey(CAPTUR_API_KEY, CAPTUR_BASE_URL);
+  console.log("[Captur] API key set successfully");
+
+  console.log("[Captur] Preparing model:", LOCATION_NAME, ASSET_TYPE);
   await prepareModel(LOCATION_NAME, ASSET_TYPE, 0.0, 0.0);
+  console.log("[Captur] Model prepared successfully");
+
+  console.log("[Captur] Getting config:", LOCATION_NAME, ASSET_TYPE);
   await getConfig(LOCATION_NAME, ASSET_TYPE, 0.0, 0.0);
+  console.log("[Captur] Config loaded successfully");
+
+  console.log("[Captur] Initialization complete");
 }
 
 export default function CameraScreen() {
@@ -38,16 +56,21 @@ export default function CameraScreen() {
   useEffect(() => {
     let unsubscriber: (() => void) | undefined;
     (async () => {
-      await initializeCaptur();
+      try {
+        await initializeCaptur();
+      } catch (e) {
+        console.error("[Captur] Initialization FAILED:", e);
+      }
       unsubscriber = subscribeToEvents({
         capturDidGenerateEvent: (state, metadata) => {
+          console.log("[Captur] Event:", state);
           if (state === "cameraDecided") {
             resetCameraState();
             setThumbnail("data:image/png;base64," + metadata?.imageDataBase64);
           }
         },
         capturDidGenerateError: (err) => {
-          console.log("capturDidGenerateError", err);
+          console.error("[Captur] Error:", err);
         },
         capturDidGenerateGuidance: (meta) => {
           guidanceInputRef.current?.setNativeProps({
