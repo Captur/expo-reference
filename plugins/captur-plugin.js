@@ -2,6 +2,7 @@ const {
   withAppBuildGradle,
   withInfoPlist,
   withAndroidManifest,
+  withPodfile,
 } = require("@expo/config-plugins");
 
 function withCapturPlugin(config) {
@@ -38,6 +39,34 @@ function withCapturPlugin(config) {
       application.$["tools:replace"] = "android:allowBackup";
     }
 
+    return config;
+  });
+
+  // Force C++17 to work around Xcode 26 defaulting to C++20,
+  // which breaks fmt's consteval usage in React Native's dependencies.
+  config = withPodfile(config, (config) => {
+    let contents = config.modResults.contents;
+
+    const postInstallSnippet = `
+    # Force C++17 for Xcode 26 compatibility
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end`;
+
+    // Insert into the existing post_install block
+    const postInstallMatch = contents.match(/post_install do \|installer\|/);
+    if (postInstallMatch) {
+      const insertIndex =
+        contents.indexOf(postInstallMatch[0]) + postInstallMatch[0].length;
+      contents =
+        contents.slice(0, insertIndex) +
+        postInstallSnippet +
+        contents.slice(insertIndex);
+    }
+
+    config.modResults.contents = contents;
     return config;
   });
 
