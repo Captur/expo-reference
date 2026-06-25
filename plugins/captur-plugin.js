@@ -42,28 +42,47 @@ function withCapturPlugin(config) {
     return config;
   });
 
-  // Force C++17 to work around Xcode 26 defaulting to C++20,
-  // which breaks fmt's consteval usage in React Native's dependencies.
+  // Workaround for fmt consteval error on Xcode 26+.
+  // Must run AFTER react_native_post_install which sets c++20 on all targets.
   config = withPodfile(config, (config) => {
     let contents = config.modResults.contents;
 
-    const postInstallSnippet = `
-    # Force C++17 for Xcode 26 compatibility
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-      end
-    end`;
+    const fmtSnippet = [
+      "",
+      "    # Workaround for fmt consteval error on Xcode 26+",
+      "    # Must run after react_native_post_install which sets c++20 on all targets",
+      "    installer.pods_project.targets.each do |target|",
+      "      if target.name == 'fmt'",
+      "        target.build_configurations.each do |config|",
+      "          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'",
+      "        end",
+      "      end",
+      "    end",
+    ].join("\n");
 
-    // Insert into the existing post_install block
-    const postInstallMatch = contents.match(/post_install do \|installer\|/);
-    if (postInstallMatch) {
-      const insertIndex =
-        contents.indexOf(postInstallMatch[0]) + postInstallMatch[0].length;
-      contents =
-        contents.slice(0, insertIndex) +
-        postInstallSnippet +
-        contents.slice(insertIndex);
+    // Find react_native_post_install(...) call and its closing paren,
+    // then insert our snippet immediately after it.
+    const rnPostInstallEnd = contents.indexOf("react_native_post_install(");
+    if (rnPostInstallEnd !== -1) {
+      // Find the closing ')' of react_native_post_install(...)
+      let parenDepth = 0;
+      let insertIndex = -1;
+      for (let i = rnPostInstallEnd; i < contents.length; i++) {
+        if (contents[i] === "(") parenDepth++;
+        if (contents[i] === ")") {
+          parenDepth--;
+          if (parenDepth === 0) {
+            insertIndex = i + 1;
+            break;
+          }
+        }
+      }
+      if (insertIndex !== -1) {
+        contents =
+          contents.slice(0, insertIndex) +
+          fmtSnippet +
+          contents.slice(insertIndex);
+      }
     }
 
     config.modResults.contents = contents;
