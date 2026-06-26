@@ -11,6 +11,7 @@ import {
 } from "@captur-ai/captur-react-native-events";
 import { useEffect, useRef, useState } from "react";
 import { Button, Image, StyleSheet, TextInput, View } from "react-native";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 const { CAPTUR_API_KEY, CAPTUR_BASE_URL } = require("../captur.config");
 
 const DELAY = 1;
@@ -56,10 +57,18 @@ export default function CameraScreen() {
   useEffect(() => {
     let unsubscriber: (() => void) | undefined;
     (async () => {
+      let initSuccessful = true;
       try {
         await initializeCaptur();
       } catch (e) {
-        console.error("[Captur] Initialization FAILED:", e);
+        showMessage({
+          message: "Captur Init Problem",
+          type: "danger",
+          floating: true,
+          duration: 5000,
+        });
+        initSuccessful = false;
+        console.log("[Captur] Initialization FAILED:", e);
       }
       unsubscriber = subscribeToEvents({
         capturDidGenerateEvent: (state, metadata) => {
@@ -81,7 +90,7 @@ export default function CameraScreen() {
           console.log("capturDidRevokeGuidance");
         },
       });
-      setCapturInitialized(true);
+      setCapturInitialized(initSuccessful);
     })();
     return () => {
       unsubscriber?.();
@@ -137,14 +146,16 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.cameraContainer}>
-        <CapturCameraView
-          key={`${referenceId}-${startVerification}`}
-          style={styles.camera}
-          referenceId={referenceId ?? ""}
-          startVerification={startVerification}
-          isFlashOn={isFlashOn}
-          isZoomedIn={isZoomedIn}
-        />
+        {capturInitialized && (
+          <CapturCameraView
+            key={`${referenceId}-${startVerification}`}
+            style={styles.camera}
+            referenceId={referenceId ?? ""}
+            startVerification={startVerification}
+            isFlashOn={isFlashOn}
+            isZoomedIn={isZoomedIn}
+          />
+        )}
       </View>
       {thumbnail && (
         <View style={styles.thumbnailContainer}>
@@ -173,6 +184,7 @@ export default function CameraScreen() {
           editable={false}
         />
       </View>
+      <FlashMessage position="top" />
     </View>
   );
 }
