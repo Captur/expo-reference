@@ -16,7 +16,7 @@ const { CAPTUR_API_KEY, CAPTUR_BASE_URL } = require("../captur.config");
 
 const DELAY = 1;
 const TIMEOUT = 15;
-const LOCATION_NAME = "Toronto";
+const LOCATION_NAME = "default";
 const ASSET_TYPE = "package";
 
 async function initializeCaptur() {

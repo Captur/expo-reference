@@ -1,6 +1,6 @@
 import type { ExpoConfig, ConfigContext } from "expo/config";
 
-const { APP_BUNDLE_ID } = require("./captur.config");
+const APP_BUNDLE_ID = "com.capturexposample";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,

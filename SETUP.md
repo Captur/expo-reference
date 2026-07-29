@@ -27,14 +27,12 @@ Edit `captur.config.js`:
 ```js
 const CAPTUR_API_KEY = "your-api-key";
 const CAPTUR_BASE_URL = "https://your-base-url.com"; // or null for default
-const APP_BUNDLE_ID = "com.yourcompany.yourapp";
 ```
 
 | Variable | Description |
 |----------|-------------|
 | `CAPTUR_API_KEY` | Your Captur workspace API key |
 | `CAPTUR_BASE_URL` | API gateway URL, or `null` for production default |
-| `APP_BUNDLE_ID` | Used as both iOS `bundleIdentifier` and Android `package` |
 
 > **Note:** `captur.config.js` is in `.gitignore` to avoid committing credentials. The example file `captur.config.example.js` is tracked.
 
@@ -86,7 +84,7 @@ See [Known Issue: Native SDK deletePreviousModels](#native-sdk-deletepreviousmod
 captur.config.js            # Your credentials (gitignored)
 captur.config.example.js    # Template with placeholders (tracked)
 app.json                    # Static Expo config (EAS-writable)
-app.config.ts               # Dynamic overlay — injects bundle ID from captur.config.js
+app.config.ts               # Dynamic overlay — sets the fixed bundle ID / package name
 plugins/captur-plugin.js    # Expo config plugin — Android deps, manifest, iOS permissions
 captur-ai-captur-react-native-events-0.7.0.tgz   # Captur RN package (tarball)
 .easignore                  # Controls what EAS copies to temp build dir
@@ -109,7 +107,7 @@ The Captur RN package includes a pre-built Android AAR (`capturMicroMobility-rel
 
 ### Config file architecture
 
-Expo requires a **static** config file (`app.json`) for EAS to write metadata like `projectId`. Dynamic values (bundle ID) are overlayed via `app.config.ts`, which imports from `captur.config.js`.
+Expo requires a **static** config file (`app.json`) for EAS to write metadata like `projectId`. The iOS `bundleIdentifier` and Android `package` (`com.capturexposample`) are overlayed via `app.config.ts`.
 
 `captur.config.js` uses **CommonJS** (`module.exports`) because Expo's config loader cannot resolve `.ts` imports from other `.ts` files.
 
